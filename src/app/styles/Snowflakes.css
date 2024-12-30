@@ -1,0 +1,43 @@
+/* 雪花容器設置 */
+.snowflakes-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none; /* 防止影響頁面上的其他元素 */
+  z-index: 9999; /* 確保雪花在最上層 */
+}
+
+/* 雪花樣式 */
+.snowflake {
+  position: absolute;
+  font-size: 24px;
+  opacity: 0.8;
+  animation: fall 8s linear infinite, sway 3s ease-in-out infinite;
+}
+
+/* 雪花下落的動畫 */
+@keyframes fall {
+  0% {
+    transform: translateY(0); /* 起始位置 */
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh); /* 完成時落到螢幕底部 */
+    opacity: 0;
+  }
+}
+
+/* 雪花左右擺動的動畫 */
+@keyframes sway {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(30px); /* 向右擺動 */
+  }
+  100% {
+    transform: translateX(0); /* 返回原來位置 */
+  }
+}
