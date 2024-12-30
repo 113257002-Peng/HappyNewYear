@@ -19,3 +19,8 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+button {
+  position: relative;
+  z-index: 1000; /* 提高層級確保按鈕在最前面 */
+}

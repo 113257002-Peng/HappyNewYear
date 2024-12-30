@@ -1,6 +1,7 @@
 "use client"; // 在檔案的開頭加上這一行
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import html2canvas from "html2canvas"; // 引入 html2canvas
 import Snowflakes from "./components/Snowflakes"; // 引入雪花特效
 import ShareButton from "./components/ShareButton"; // 引入分享按鈕
 
@@ -10,6 +11,11 @@ const HappyNewYearPage = () => {
   );
   const [isEditing, setIsEditing] = useState(false); // 編輯狀態
   const [animation, setAnimation] = useState(false); // 動畫狀態
+
+  const editButtonRef = useRef<HTMLButtonElement | null>(null); // 儲存按鈕的 ref
+  const shareButtonRef = useRef<HTMLButtonElement | null>(null); // 分享按鈕的 ref
+  const screenshotButtonRef = useRef<HTMLButtonElement | null>(null); // 截圖按鈕的 ref
+  const pageRef = useRef<HTMLDivElement | null>(null); // 用來參照要截圖的元素
 
   // 啟動動畫的副作用
   useEffect(() => {
@@ -33,8 +39,34 @@ const HappyNewYearPage = () => {
     setIsEditing(false);
   };
 
+  // 截圖功能
+  const handleScreenshot = () => {
+    if (pageRef.current) {
+      html2canvas(pageRef.current, {
+        ignoreElements: (element) => {
+          // 忽略儲存和分享按鈕
+          return (
+            element === editButtonRef.current ||
+            element === shareButtonRef.current ||
+            element === screenshotButtonRef.current
+          );
+        },
+      }).then((canvas) => {
+        const image = canvas.toDataURL("image/png");
+        // 下載圖片
+        const link = document.createElement("a");
+        link.href = image;
+        link.download = "happy-new-year.png";
+        link.click();
+      });
+    }
+  };
+
   return (
-    <div className="bg-black text-white min-h-screen flex justify-center items-center flex-col p-4 relative">
+    <div
+      className="bg-black text-white min-h-screen flex justify-center items-center flex-col p-4 relative"
+      ref={pageRef}
+    >
       {/* 雪花特效 */}
       <Snowflakes />
 
@@ -89,6 +121,7 @@ const HappyNewYearPage = () => {
       <div className="mt-8 flex space-x-4">
         {isEditing ? (
           <button
+            ref={editButtonRef} // 儲存按鈕的 ref
             onClick={handleSaveClick}
             className="bg-gradient-to-r from-green-400 to-teal-500 text-white font-semibold px-6 py-3 rounded-lg shadow-lg hover:from-green-500 hover:to-teal-600 transition duration-300 ease-in-out transform hover:scale-105"
           >
@@ -96,15 +129,24 @@ const HappyNewYearPage = () => {
           </button>
         ) : (
           <button
+            ref={editButtonRef} // 編輯按鈕的 ref
             onClick={handleEditClick}
             className="bg-gradient-to-r from-blue-400 to-indigo-500 text-white font-semibold px-6 py-3 rounded-lg shadow-lg hover:from-blue-500 hover:to-indigo-600 transition duration-300 ease-in-out transform hover:scale-105"
           >
             修改
           </button>
         )}
-
         {/* 分享按鈕 */}
-        <ShareButton content={message} />
+        <ShareButton ref={shareButtonRef} content={message} />
+
+        {/* 截圖按鈕 */}
+        <button
+          ref={screenshotButtonRef} // 截圖按鈕的 ref
+          onClick={handleScreenshot}
+          className="bg-gradient-to-r from-purple-400 to-pink-500 text-white font-semibold px-6 py-3 rounded-lg shadow-lg hover:from-purple-500 hover:to-pink-600 transition duration-300 ease-in-out transform hover:scale-105"
+        >
+          截圖
+        </button>
       </div>
     </div>
   );
